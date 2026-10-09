@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice OS - Gemini Powered Operating System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="os-container">
+    <!-- Top Bar -->
+    <header class="os-topbar">
+      <div class="topbar-left">
+        <div class="os-logo">
+          <span class="logo-icon">🪐</span>
+          <span class="logo-text">Voice <strong>OS</strong></span>
+        </div>
+        <div class="status-pill" id="aiStatusPill">
+          <span class="status-dot"></span>
+          <span id="aiStatusText">Connecting to Gemini...</span>
+        </div>
+      </div>
+      
+      <div class="topbar-center">
+        <div class="clock-display" id="osClock">00:00:00</div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="topbar-btn" id="voiceHelpBtn" title="How to use Voice Control">
+          <span class="btn-icon">💡</span>
+          <span class="btn-label">Voice Help</span>
+        </button>
+        <button class="topbar-btn" id="topbarWallpaperBtn" title="Customize Desktop Wallpaper">
+          <span class="btn-icon">🖼️</span>
+          <span class="btn-label">Wallpaper</span>
+        </button>
+        <button class="topbar-btn" id="ttsToggleBtn" title="Toggle Voice Output">
+          <span class="btn-icon" id="ttsIcon">🔊</span>
+          <span class="btn-label" id="ttsLabel">Voice: ON</span>
+        </button>
+        <div class="system-stats">
+          <span class="badge" id="modelBadge">Gemini</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace / Desktop -->
+    <main class="os-desktop">
+      <!-- Voice Assistant Central Interface -->
+      <section class="assistant-stage">
+        <!-- Top Badge & Voice Accent Toggle -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px;">
+          <div class="voice-badge-tag" style="margin: 0;">🎙️ Full-Time Voice Assistant</div>
+          <button id="voiceLangToggleBtn" class="lang-toggle-btn" title="Toggle Accent / Language (Indian English / US English)" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #cbd5e1; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">🇮🇳 En-IN</button>
+        </div>
+
+        <!-- Symmetrical Central Voice Orb -->
+        <div class="orb-container">
+          <div class="sound-wave-rings" id="waveRings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+          <button class="voice-orb" id="micBtn" title="Click to Talk / Mute">
+            <div class="orb-inner">
+              <svg class="mic-svg" viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <!-- Vertical Interactive Voice Status Pill Button -->
+        <button class="speak-action-btn listening" id="voiceSpeakBtn" title="Full-Time Voice Microphone (Click to Mute / Unmute)">🟢 Listening Live</button>
+
+        <div class="assistant-status">
+          <h2 id="assistantStateTitle">Always Listening 🎙️</h2>
+          <p id="assistantSubtext">Speak naturally anytime: "open weather", "play snake", "up", "down", "save the image"...</p>
+        </div>
+
+        <!-- Live transcript preview -->
+        <div class="live-transcript" id="liveTranscript">
+          <span class="transcript-placeholder">"Open camera", "Take photo", "Open file manager", "Play snake"</span>
+        </div>
+
+
+
+        <!-- Recent Spoken Commands -->
+        <div class="recent-commands-container" id="recentCommandsContainer">
+          <div class="recent-commands-header">
+            <span>Recent Commands</span>
+            <button type="button" id="clearRecentCmdsBtn" class="clear-recent-btn">Clear History</button>
+          </div>
+          <div class="recent-commands-list" id="recentCommandsList">
+            <span style="color:var(--text-dim);font-size:0.75rem;font-style:italic;">No commands executed yet.</span>
+          </div>
+        </div>
+
+        <!-- Command bar with countdown ring container -->
+        <div class="prompt-container" id="promptContainer">
+          <svg class="countdown-svg" id="countdownSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect class="countdown-rect-bg" x="0.75" y="1" width="98.5" height="98" rx="14" ry="14" pathLength="100" />
+            <rect class="countdown-rect-progress" id="countdownRect" x="0.75" y="1" width="98.5" height="98" rx="14" ry="14" pathLength="100" />
+          </svg>
+          <div class="countdown-timer-pill" id="countdownPill" style="display: none;">
+            <span class="countdown-spinner"></span>
+            <span id="countdownText">1.4s</span>
+          </div>
+          <form class="prompt-bar" id="promptForm">
+            <input type="text" id="promptInput" placeholder="Speak or type a command (e.g. 'save it as Arya.txt', 'open snake', 'take photo')..." autocomplete="off">
+            <button type="submit" id="sendBtn" title="Send Command">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Toggleable Terminal Log Drawer -->
+      <div class="os-window terminal-drawer" id="logWindow">
+        <div class="window-header">
+          <div class="window-controls">
+            <span class="ctrl ctrl-close" id="closeLogsBtn"></span>
+            <span class="ctrl ctrl-min"></span>
+            <span class="ctrl ctrl-max"></span>
+          </div>
+          <div class="window-title">Voice Kernel Terminal</div>
+          <button class="clear-btn" id="clearLogsBtn">Clear</button>
+        </div>
+        <div class="window-body terminal-body" id="chatLogs">
+          <div class="log-entry system-entry">
+            <span class="timestamp">[SYSTEM]</span>
+            <span class="msg">Voice OS online. Speech recognition & file manager ready.</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Dynamic Desktop Windows Layer -->
+    <div id="desktopWindows" class="desktop-windows-layer"></div>
+
+    <!-- Taskbar / Dock -->
+    <footer class="os-taskbar">
+      <div class="taskbar-left-zone">
+        <div class="taskbar-apps">
+          <button class="app-icon active" data-app="mic" id="dockMicBtn" title="Voice Assistant (Toggle Mic)">🎙️</button>
+          <button class="app-icon" id="quickLaunchCamera" title="Camera (Photo & Video)">📷</button>
+          <button class="app-icon" id="quickLaunchGallery" title="Media Gallery">🖼️</button>
+          <button class="app-icon" id="quickLaunchFiles" title="File Manager">📁</button>
+          <button class="app-icon" id="quickLaunchNotepad" title="Launch Notepad">📝</button>
+          <button class="app-icon" id="quickLaunchSnake" title="Launch Snake Game">🐍</button>
+          <button class="app-icon" id="quickLaunchWallpaper" title="Wallpaper Studio">🎨</button>
+          <button class="app-icon" id="quickLaunchClock" title="Launch Clock">🕒</button>
+          <button class="app-icon" id="quickLaunchWeather" title="Launch Weather">🌤️</button>
+          <button class="app-icon" id="quickLaunchCalc" title="Launch Calculator">🧮</button>
+          <button class="app-icon" id="quickLaunchMusic" title="Launch Music Player">🎵</button>
+          <button class="app-icon" id="quickLaunchManager" title="Launch Task Manager">⚡</button>
+          <button class="app-icon" data-app="terminal" id="dockTerminalBtn" title="Terminal Logs">💻</button>
+        </div>
+        <!-- Dynamic Running Windows in Taskbar -->
+        <div class="taskbar-windows" id="taskbarWindows"></div>
+      </div>
+
+      <!-- Taskbar Thinking Animation Indicator -->
+      <div class="taskbar-thinking" id="taskbarThinking" style="display: none;">
+        <span class="thinking-spinner"></span>
+        <span class="thinking-text">Gemini thinking...</span>
+      </div>
+
+      <!-- Hands-free Mode Toggle in Taskbar -->
+      <button class="hands-free-btn is-active" id="handsFreeBtn" title="Toggle Full-Time Microphone Listening">
+        <span class="hands-free-dot"></span>
+        <span class="hands-free-label" id="handsFreeLabel">Mic: Always ON 🎙️</span>
+      </button>
+
+      <div class="taskbar-hints">
+        Press <kbd>`</kbd> or <kbd>Space</kbd>
+      </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Voice Confirmation Modal for Destructive Actions -->
+    <div class="os-confirm-modal" id="voiceConfirmModal" style="display: none;">
+      <div class="confirm-card">
+        <div class="confirm-icon">⚠️</div>
+        <div class="confirm-title" id="confirmTitle">Confirm Action</div>
+        <div class="confirm-msg" id="confirmMsg">Are you sure you want to perform this action?</div>
+        <div class="confirm-actions">
+          <button class="confirm-btn cancel-btn" id="confirmCancelBtn">Cancel</button>
+          <button class="confirm-btn danger-btn" id="confirmOkBtn">Yes, Confirm</button>
+        </div>
+        <div class="confirm-voice-hint">🎙️ Speak "Yes" to confirm or "Cancel"</div>
+      </div>
+    </div>
+
+    <!-- Voice Commands / Help Modal -->
+    <div class="os-help-modal" id="voiceHelpModal" style="display: none;">
+      <div class="help-card">
+        <div class="help-header">
+          <div class="help-title">
+            <span class="help-title-icon">🎙️</span>
+            <span>Voice OS Command Reference</span>
+          </div>
+          <button class="help-close-btn" id="closeHelpBtn" title="Close Help">✕</button>
+        </div>
+        <div class="help-body">
+          <div class="help-section">
+            <div class="help-section-title">🧭 Navigation & Desktop</div>
+            <div class="help-grid">
+              <div class="cmd-pill"><code>"go home"</code><span>Minimize all windows to desktop</span></div>
+              <div class="cmd-pill"><code>"go back"</code><span>Go back / exit current folder</span></div>
+              <div class="cmd-pill"><code>"scroll up / down"</code><span>Scroll the page or focused window</span></div>
+              <div class="cmd-pill"><code>"stop / cancel"</code><span>Stop listening & abort action</span></div>
+              <div class="cmd-pill"><code>"voice commands"</code><span>Open this command reference</span></div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <div class="help-section-title">📁 File Management (Full Voice Control)</div>
+            <div class="help-grid">
+              <div class="cmd-pill"><code>"open file manager"</code><span>Launch virtual file system</span></div>
+              <div class="cmd-pill"><code>"save it as [name.txt]"</code><span>Save file with spoken name (duplicate check)</span></div>
+              <div class="cmd-pill"><code>"save file" / "save it"</code><span>Persist active editing file</span></div>
+              <div class="cmd-pill"><code>"create a file called [name]"</code><span>Create new file instantly</span></div>
+              <div class="cmd-pill"><code>"create a folder called [name]"</code><span>Create new subfolder</span></div>
+              <div class="cmd-pill"><code>"open [filename]"</code><span>Find & open file in editor</span></div>
+              <div class="cmd-pill"><code>"open the [name] folder"</code><span>Navigate into folder</span></div>
+              <div class="cmd-pill"><code>"rename this file to [name]"</code><span>Rename file</span></div>
+              <div class="cmd-pill"><code>"delete this file"</code><span>Delete file with voice confirmation</span></div>
+              <div class="cmd-pill"><code>"download this file"</code><span>Download active file to PC</span></div>
+              <div class="cmd-pill"><code>"refresh files"</code><span>Refresh directory contents</span></div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <div class="help-section-title">📷 Camera & Video Recording</div>
+            <div class="help-grid">
+              <div class="cmd-pill"><code>"open camera"</code><span>Launch Camera preview</span></div>
+              <div class="cmd-pill"><code>"take photo" / "click picture"</code><span>Capture instant photo</span></div>
+              <div class="cmd-pill"><code>"save photo"</code><span>Save snapshot to Gallery</span></div>
+              <div class="cmd-pill"><code>"retake photo"</code><span>Discard and retake photo</span></div>
+              <div class="cmd-pill"><code>"start video"</code><span>Begin recording video</span></div>
+              <div class="cmd-pill"><code>"pause video" / "resume video"</code><span>Pause or continue recording</span></div>
+              <div class="cmd-pill"><code>"stop video"</code><span>Finish & preview video</span></div>
+              <div class="cmd-pill"><code>"save video"</code><span>Save recorded video to Gallery</span></div>
+              <div class="cmd-pill"><code>"switch camera"</code><span>Toggle front/back camera</span></div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <div class="help-section-title">🖼️ Gallery</div>
+            <div class="help-grid">
+              <div class="cmd-pill"><code>"open gallery"</code><span>View saved media gallery</span></div>
+              <div class="cmd-pill"><code>"show photos"</code><span>Filter gallery to photos</span></div>
+              <div class="cmd-pill"><code>"show videos"</code><span>Filter gallery to videos</span></div>
+              <div class="cmd-pill"><code>"show all"</code><span>Show all media items</span></div>
+              <div class="cmd-pill"><code>"open latest photo"</code><span>Preview newest photo</span></div>
+              <div class="cmd-pill"><code>"play latest video"</code><span>Play newest recorded video</span></div>
+              <div class="cmd-pill"><code>"delete this photo / video"</code><span>Delete with confirmation</span></div>
+              <div class="cmd-pill"><code>"clear gallery"</code><span>Erase all gallery media</span></div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <div class="help-section-title">🐍 Snake Game Controls</div>
+            <div class="help-grid">
+              <div class="cmd-pill"><code>"open snake game"</code><span>Launch Retro Snake</span></div>
+              <div class="cmd-pill"><code>"start game" / "restart game"</code><span>Start or reset game</span></div>
+              <div class="cmd-pill"><code>"pause game" / "resume game"</code><span>Pause or unpause</span></div>
+              <div class="cmd-pill"><code>"up / down / left / right"</code><span>Voice steer (no audio spam)</span></div>
+              <div class="cmd-pill"><code>Arrows or WASD</code><span>Instant responsive keyboard controls</span></div>
+              <div class="cmd-pill"><code>Space</code><span>Pause / Resume game</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="os.js?v=20261006-audit-v1"></script>
+</body>
+</html>
